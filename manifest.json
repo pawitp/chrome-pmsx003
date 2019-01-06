@@ -1,0 +1,12 @@
+{
+  "name": "Air Quality Monitor",
+  "description": "Tool to query PMSx003 Air Quality Monitor",
+  "version": "0.1",
+  "manifest_version": 2,
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "permissions": ["serial", "fileSystem", "fileSystem.write"]
+}

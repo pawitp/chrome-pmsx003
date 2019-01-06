@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="script.js"></script>
+    <style>
+      html, body {
+        overflow-y: visible;
+      }
+      table {
+        font-size: 30px;
+      }
+      th {
+        text-align: left;
+      }
+      .numDisp {
+        padding: 0 10px;
+      }
+      .aqiLabel {
+        padding-left: 20px;
+        padding-right: 10px;
+      }
+      .unit {
+        font-size: 24px;
+      }
+      #buffer {
+        border: 1px solid black;
+        padding: 5px;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <th>PM 1.0</th>
+        <td id="pm1_0" class="numDisp">??</td>
+        <td class="unit">&mu;g/m<sup>3</sup></td>
+      </tr>
+      <tr>
+        <th>PM 2.5</th>
+        <td id="pm2_5" class="numDisp">??</td>
+        <td class="unit">&mu;g/m<sup>3</sup></td>
+        <th class="aqiLabel">AQI</th>
+        <td id="pm2_5_aqi" class="numDisp">??</td>
+      </tr>
+      <tr>
+        <th>PM 10</th>
+        <td id="pm10" class="numDisp">??</td>
+        <td class="unit">&mu;g/m<sup>3</sup></td>
+        <th class="aqiLabel">AQI</th>
+        <td id="pm10_aqi" class="numDisp">??</td>
+      </tr>
+    </table>
+    <div id="buffer"></div>
+    <button id="log_btn">Start Logging</button>
+    <button id="toggle_btn"></button>
+    <div id="log"></div>
+  </body>
+</html>
