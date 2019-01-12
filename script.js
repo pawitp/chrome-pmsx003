@@ -47,7 +47,7 @@ function calculateAqiColor(aqi) {
 window.onload = function() {
   var connectionId = 0;
   var logWriter;
-  var useAtm = true;
+  var useAtm = false; // With default to true on init
   const logElem = document.getElementById("log");
   const bufferElem = document.getElementById("buffer");
   const pm1_0Elem = document.getElementById("pm1_0");
