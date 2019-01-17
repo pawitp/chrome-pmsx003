@@ -174,6 +174,30 @@ window.onload = function() {
     }
   }
 
+  for (let elem of document.getElementsByClassName("cmd")) {
+    elem.onclick = function() {
+      var cmd = elem.dataset.cmd;
+      var ab = new ArrayBuffer(7);
+      var buf = new Uint8Array(ab);
+      buf[0] = parseInt(cmd.substring(0, 2), 16);
+      buf[1] = parseInt(cmd.substring(2, 4), 16);
+      buf[2] = parseInt(cmd.substring(4, 6), 16);
+      buf[3] = parseInt(cmd.substring(6, 8), 16);
+      buf[4] = parseInt(cmd.substring(8, 10), 16);
+
+      var check = 0;
+      for (let i = 0; i < 5; i++) {
+        check += buf[i];
+      }
+
+      buf[5] = parseInt(check / 256);
+      buf[6] = parseInt(check % 256);
+      chrome.serial.send(connectionId, ab, (sendInfo) => {
+        log("Sent " + sendInfo.bytesSent + " bytes");
+      });
+    }
+  }
+
   // Initialize UI
   toggleBtnElem.onclick();
   processInput(0);
