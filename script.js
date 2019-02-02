@@ -47,11 +47,9 @@ function calculateAqiColor(aqi) {
 window.onload = function() {
   var connectionId = 0;
   var logWriter;
-  var useAtm = false; // With default to true on init
   const logElem = document.getElementById("log");
   const lastUpdatedElem = document.getElementById("last_update");
   const bufferElem = document.getElementById("buffer");
-  const pm1_0Elem = document.getElementById("pm1_0");
   const pm2_5Elem = document.getElementById("pm2_5");
   const pm2_5AqiElem = document.getElementById("pm2_5_aqi");
   const pm10Elem = document.getElementById("pm10");
@@ -63,7 +61,7 @@ window.onload = function() {
     logElem.innerHTML += "<br>[" + new Date() + "] " + txt;
   }
 
-  const buffer = new Array(32).fill(0);
+  const buffer = new Array(10).fill(0);
   function processInput(byte) {
     // Replace the byte with the new one we've received
     buffer.shift();
@@ -75,24 +73,20 @@ window.onload = function() {
     }
     bufferElem.innerHTML = bufferText;
 
-    if (buffer[0] == 66 && buffer[1] == 77) {
+    if (buffer[0] == 0xAA && buffer[9] == 0xAB) {
       var check = 0;
-      for (let i = 0; i < 30; i++) {
+      for (let i = 2; i < 8; i++) {
         check += buffer[i];
       }
-      var checkHigh = parseInt(check / 256);
-      var checkLow = parseInt(check % 256);
-      if (buffer[30] == checkHigh && buffer[31] == checkLow) {
-        var base = 0;
-        if (useAtm) base = 6;
-        const pm1_0 = buffer[base + 4] * 256 + buffer[base + 5];
-        pm1_0Elem.innerHTML = pm1_0;
-        const pm2_5 = buffer[base + 6] * 256 + buffer[base + 7];
+      check = parseInt(check % 256);
+      if (buffer[8] == check) {
+        var base = 2;
+        const pm2_5 = (buffer[base + 1] * 256 + buffer[base + 0]) / 10;
         const pm2_5aqi = calculateAqi(PM_2_5_AQI, pm2_5);
         pm2_5Elem.innerHTML = pm2_5;
         pm2_5AqiElem.innerHTML = pm2_5aqi;
         pm2_5AqiElem.style.backgroundColor = calculateAqiColor(pm2_5aqi);
-        const pm10 = buffer[base + 8] * 256 + buffer[base + 9];
+        const pm10 = (buffer[base + 3] * 256 + buffer[base + 2]) / 10;
         const pm10aqi = calculateAqi(PM_10_AQI, pm10);
         pm10Elem.innerHTML = pm10;
         pm10AqiElem.innerHTML = pm10aqi;
@@ -101,11 +95,11 @@ window.onload = function() {
         
         if (logWriter) {
           const time = new Date().getTime();
-          const logLine = time + "," + pm1_0 + "," + pm2_5 + "," + pm10 + "\n";
+          const logLine = time + ",-1," + pm2_5 + "," + pm10 + "\n";
           logWriter.write(new Blob([logLine], { type: "text/plain" }));
         }
       } else {
-        log("Checksum failed " + checkHigh + " " + checkLow);
+        log("Checksum failed " + check);
       }
     }
   }
@@ -123,10 +117,11 @@ window.onload = function() {
     }
 
     if (ports.length > 0) {
-      const device = ports[0];
-      log("Connecting to " + device.path + " pid=" + device.productId);
+      const device = ports[2].path;
+      log(JSON.stringify(ports));
+      log("Connecting to " + device);
       chrome.serial.connect(
-        device.path,
+        device,
         { bitrate: 9600 },
         onConnect
       );
@@ -167,33 +162,26 @@ window.onload = function() {
     });
   };
 
-  toggleBtnElem.onclick = function() {
-    useAtm = !useAtm;
-    if (useAtm) {
-      toggleBtnElem.innerHTML = "Using ATM";
-    } else {
-      toggleBtnElem.innerHTML = "Using CF1";
-    }
-  }
-
   for (let elem of document.getElementsByClassName("cmd")) {
     elem.onclick = function() {
       var cmd = elem.dataset.cmd;
-      var ab = new ArrayBuffer(7);
+      var ab = new ArrayBuffer(19);
       var buf = new Uint8Array(ab);
-      buf[0] = parseInt(cmd.substring(0, 2), 16);
-      buf[1] = parseInt(cmd.substring(2, 4), 16);
-      buf[2] = parseInt(cmd.substring(4, 6), 16);
-      buf[3] = parseInt(cmd.substring(6, 8), 16);
-      buf[4] = parseInt(cmd.substring(8, 10), 16);
+      buf[0] = 0xAA;
+      buf[1] = 0xB4;
+      buf[2] = parseInt(cmd.substring(0, 2), 16);
+      buf[3] = parseInt(cmd.substring(2, 4), 16);
+      buf[4] = parseInt(cmd.substring(4, 6), 16);
+      buf[15] = 0xFF;
+      buf[16] = 0xFF;
 
       var check = 0;
-      for (let i = 0; i < 5; i++) {
+      for (let i = 2; i < 17; i++) {
         check += buf[i];
       }
 
-      buf[5] = parseInt(check / 256);
-      buf[6] = parseInt(check % 256);
+      buf[17] = parseInt(check % 256);
+      buf[18] = 0xAB;
       chrome.serial.send(connectionId, ab, (sendInfo) => {
         log("Sent " + sendInfo.bytesSent + " bytes");
       });
@@ -201,7 +189,6 @@ window.onload = function() {
   }
 
   // Initialize UI
-  toggleBtnElem.onclick();
   processInput(0);
 
   log("Software initialized.");

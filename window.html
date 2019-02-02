@@ -36,11 +36,6 @@
   <body>
     <table>
       <tr>
-        <th>PM 1.0</th>
-        <td id="pm1_0" class="numDisp">??</td>
-        <td class="unit">&mu;g/m<sup>3</sup></td>
-      </tr>
-      <tr>
         <th>PM 2.5</th>
         <td id="pm2_5" class="numDisp">??</td>
         <td class="unit">&mu;g/m<sup>3</sup></td>
@@ -55,17 +50,16 @@
         <td id="pm10_aqi" class="numDisp">??</td>
       </tr>
       <tr>
-        <td colspan="5" class="lastUpdateRow">Last Updated: <span id="last_update">Never</span></td>
+        <td colspan="5" class="lastUpdateRow">SDS011 Last Updated: <span id="last_update">Never</span></td>
       </tr>
     </table>
     <div id="buffer"></div>
     <button id="log_btn">Start Logging</button>
-    <button id="toggle_btn"></button>
-    <button class="cmd" data-cmd="424de20000">Read</button>
-    <button class="cmd" data-cmd="424de10000">Passive Mode</button>
-    <button class="cmd" data-cmd="424de10001">Active Mode</button>
-    <button class="cmd" data-cmd="424de40000">Sleep</button>
-    <button class="cmd" data-cmd="424de40001">Wake</button>
+    <button class="cmd" data-cmd="040000">Read</button>
+    <button class="cmd" data-cmd="020101">Passive Mode</button>
+    <button class="cmd" data-cmd="020100">Active Mode</button>
+    <button class="cmd" data-cmd="060100">Sleep</button>
+    <button class="cmd" data-cmd="060101">Wake</button>
     <div id="log"></div>
   </body>
 </html>

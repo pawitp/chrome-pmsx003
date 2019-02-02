@@ -1,6 +1,6 @@
 {
-  "name": "Air Quality Monitor",
-  "description": "Tool to query PMSx003 Air Quality Monitor",
+  "name": "SDS011",
+  "description": "Tool to query SDS011 Air Quality Monitor",
   "version": "0.1",
   "manifest_version": 2,
   "app": {
