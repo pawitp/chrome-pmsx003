@@ -22,6 +22,10 @@
       .unit {
         font-size: 24px;
       }
+      .lastUpdateRow {
+        padding-top: 10px;
+        font-size: 12px;
+      }
       #buffer {
         border: 1px solid black;
         padding: 5px;
@@ -49,6 +53,9 @@
         <td class="unit">&mu;g/m<sup>3</sup></td>
         <th class="aqiLabel">AQI</th>
         <td id="pm10_aqi" class="numDisp">??</td>
+      </tr>
+      <tr>
+        <td colspan="5" class="lastUpdateRow">Last Updated: <span id="last_update">Never</span></td>
       </tr>
     </table>
     <div id="buffer"></div>

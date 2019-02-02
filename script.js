@@ -49,6 +49,7 @@ window.onload = function() {
   var logWriter;
   var useAtm = false; // With default to true on init
   const logElem = document.getElementById("log");
+  const lastUpdatedElem = document.getElementById("last_update");
   const bufferElem = document.getElementById("buffer");
   const pm1_0Elem = document.getElementById("pm1_0");
   const pm2_5Elem = document.getElementById("pm2_5");
@@ -96,6 +97,7 @@ window.onload = function() {
         pm10Elem.innerHTML = pm10;
         pm10AqiElem.innerHTML = pm10aqi;
         pm10AqiElem.style.backgroundColor = calculateAqiColor(pm10aqi);
+        lastUpdatedElem.innerHTML = new Date();
         
         if (logWriter) {
           const time = new Date().getTime();
@@ -121,10 +123,10 @@ window.onload = function() {
     }
 
     if (ports.length > 0) {
-      const device = ports[0].path;
-      log("Connecting to " + device);
+      const device = ports[0];
+      log("Connecting to " + device.path + " pid=" + device.productId);
       chrome.serial.connect(
-        device,
+        device.path,
         { bitrate: 9600 },
         onConnect
       );
